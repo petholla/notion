@@ -2,11 +2,12 @@ import os
 import requests
 import configparser
 from pprint import pprint
-from dataclasses import dataclass
+from dataclasses import dataclass, field
+from lib.database import Database
 
 @dataclass
 class Notion:
-    token: str = ""
+    token: str = field(init=False, repr=False)
     def __post_init__(self):
         """Get token from ~/.notion.ini"""
         home = os.path.expanduser("~")
@@ -47,4 +48,7 @@ class Notion:
             }
         }
         response = self.call_api("POST", "/search", data=data)
-        return response.json().get("results", [])
+        
+        for database_data in response.json().get("results", []):
+            database = Database(notion=self, id=database_data["id"], data=database_data)
+            yield database
