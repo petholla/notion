@@ -65,6 +65,5 @@ class Notion:
     def get_database(self, title: str):
         """Get database by title."""
         for database in self.get_databases(query=title):
-            print(database.title, title)
             if database.title == title:
                 return database
